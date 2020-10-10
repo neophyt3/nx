@@ -54,12 +54,21 @@ describe('getBaseWebpackPartial', () => {
     });
 
     it('should split typescript type checking into a separate workers', () => {
-      const result = getBaseWebpackPartial(input);
+      const result = getBaseWebpackPartial(input, true);
 
       const typeCheckerPlugin = result.plugins.find(
         (plugin) => plugin instanceof ForkTsCheckerWebpackPlugin
       ) as ForkTsCheckerWebpackPlugin;
       expect(typeCheckerPlugin).toBeTruthy();
+    });
+
+    it('should not do type checking for legacy builds', () => {
+      const result = getBaseWebpackPartial(input, false);
+
+      const typeCheckerPlugin = result.plugins.find(
+        (plugin) => plugin instanceof ForkTsCheckerWebpackPlugin
+      ) as ForkTsCheckerWebpackPlugin;
+      expect(typeCheckerPlugin).toBeFalsy();
     });
 
     it('should disable performance hints', () => {
@@ -131,7 +140,7 @@ describe('getBaseWebpackPartial', () => {
 
   describe('the tsConfig option', () => {
     it('should set the correct options for the type checker plugin', () => {
-      const result = getBaseWebpackPartial(input);
+      const result = getBaseWebpackPartial(input, true);
 
       const typeCheckerPlugin = result.plugins.find(
         (plugin) => plugin instanceof ForkTsCheckerWebpackPlugin
@@ -245,10 +254,13 @@ describe('getBaseWebpackPartial', () => {
 
   describe('the memory limit option', () => {
     it('should set the memory limit for the type checker', () => {
-      const result = getBaseWebpackPartial({
-        ...input,
-        memoryLimit: 1024,
-      });
+      const result = getBaseWebpackPartial(
+        {
+          ...input,
+          memoryLimit: 1024,
+        },
+        true
+      );
 
       const typeCheckerPlugin = result.plugins.find(
         (plugin) => plugin instanceof ForkTsCheckerWebpackPlugin
@@ -259,10 +271,13 @@ describe('getBaseWebpackPartial', () => {
 
   describe('the max workers option', () => {
     it('should set the maximum workers for the type checker', () => {
-      const result = getBaseWebpackPartial({
-        ...input,
-        maxWorkers: 1,
-      });
+      const result = getBaseWebpackPartial(
+        {
+          ...input,
+          maxWorkers: 1,
+        },
+        true
+      );
 
       const typeCheckerPlugin = result.plugins.find(
         (plugin) => plugin instanceof ForkTsCheckerWebpackPlugin
@@ -292,6 +307,17 @@ describe('getBaseWebpackPartial', () => {
       expect(
         result.plugins.filter((plugin) => plugin instanceof CopyWebpackPlugin)
       ).toHaveLength(1);
+    });
+
+    it('should not add a copy-webpack-plugin if the assets option is empty', () => {
+      const result = getBaseWebpackPartial({
+        ...input,
+        assets: [],
+      });
+
+      expect(
+        result.plugins.filter((plugin) => plugin instanceof CopyWebpackPlugin)
+      ).toHaveLength(0);
     });
   });
 
@@ -395,6 +421,47 @@ describe('getBaseWebpackPartial', () => {
             usedExports: true,
           })
         );
+      });
+    });
+  });
+
+  describe('babel loader', () => {
+    it('should set default options', () => {
+      const result = getBaseWebpackPartial({
+        ...input,
+        progress: true,
+      });
+
+      const rule = result.module.rules.find(
+        (r) => typeof r.loader === 'string' && r.loader.match(/babel-loader/)
+      );
+      expect(rule.options).toMatchObject({
+        rootMode: 'upward',
+        cwd: '/root/root/src',
+        envName: undefined,
+        babelrc: true,
+      });
+    });
+
+    it('should support envName overrides', () => {
+      const result = getBaseWebpackPartial(
+        {
+          ...input,
+          progress: true,
+        },
+        true,
+        true,
+        'production'
+      );
+
+      const rule = result.module.rules.find(
+        (r) => typeof r.loader === 'string' && r.loader.match(/babel-loader/)
+      );
+      expect(rule.options).toMatchObject({
+        rootMode: 'upward',
+        cwd: '/root/root/src',
+        envName: 'production',
+        babelrc: true,
       });
     });
   });

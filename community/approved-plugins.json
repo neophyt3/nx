@@ -35,7 +35,7 @@
     "url": "https://github.com/FabianGosebrink/nx-protractor-to-cypress"
   },
   {
-    "name": "@gperdomor/nx-docker",
+    "name": "@nx-tools/nx-docker",
     "description": "Nx plugin to build docker images of your affected apps",
     "url": "https://github.com/gperdomor/nx-tools/tree/master/libs/nx-docker"
   },
@@ -43,6 +43,11 @@
     "name": "@angular-custom-builders/lite-serve",
     "description": "Nx plugin to run the e2e test on an existing dist folder",
     "url": "https://github.com/mauriziovitale/angular-plugins/tree/master/libs/lite-serve"
+  },
+  {
+    "name": "@nx-plus/nuxt",
+    "description": "Nx plugin adding first class support for Nuxt in your Nx workspace.",
+    "url": "https://github.com/ZachJW34/nx-plus/tree/master/libs/nuxt"
   },
   {
     "name": "@nx-plus/vue",

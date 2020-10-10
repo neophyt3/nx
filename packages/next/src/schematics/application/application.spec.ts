@@ -92,7 +92,7 @@ describe('app', () => {
     );
 
     expect(tree.readContent('apps/my-app/jest.config.js')).toContain(
-      `moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'html'],`
+      `moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],`
     );
   });
 
@@ -197,14 +197,14 @@ describe('app', () => {
   });
 
   describe('--linter=eslint', () => {
-    it('should add .eslintrc and dependencies', async () => {
+    it('should add .eslintrc.json and dependencies', async () => {
       const tree = await runSchematic(
         'app',
         { name: 'myApp', linter: 'eslint' },
         appTree
       );
 
-      const eslintJson = readJsonInTree(tree, '/apps/my-app/.eslintrc');
+      const eslintJson = readJsonInTree(tree, '/apps/my-app/.eslintrc.json');
       const packageJson = readJsonInTree(tree, '/package.json');
 
       expect(eslintJson.plugins).toEqual(

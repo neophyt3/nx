@@ -18,9 +18,9 @@ forEachCli('nx', () => {
 
       runCLI(`generate @nrwl/react:app ${myapp}`);
 
-      const eslintrc = readJson('.eslintrc');
+      const eslintrc = readJson('.eslintrc.json');
       eslintrc.rules['no-console'] = 'error';
-      updateFile('.eslintrc', JSON.stringify(eslintrc, null, 2));
+      updateFile('.eslintrc.json', JSON.stringify(eslintrc, null, 2));
 
       updateFile(`apps/${myapp}/src/main.ts`, `console.log("should fail");`);
 
@@ -34,9 +34,9 @@ forEachCli('nx', () => {
 
       runCLI(`generate @nrwl/react:app ${myapp}`);
 
-      const eslintrc = readJson('.eslintrc');
+      const eslintrc = readJson('.eslintrc.json');
       eslintrc.rules['no-console'] = 'error';
-      updateFile('.eslintrc', JSON.stringify(eslintrc, null, 2));
+      updateFile('.eslintrc.json', JSON.stringify(eslintrc, null, 2));
 
       updateFile(`apps/${myapp}/src/main.ts`, `console.log("should fail");`);
 
@@ -49,9 +49,9 @@ forEachCli('nx', () => {
 
       runCLI(`generate @nrwl/react:app ${myapp}`);
 
-      const eslintrc = readJson('.eslintrc');
+      const eslintrc = readJson('.eslintrc.json');
       eslintrc.rules['no-console'] = undefined;
-      updateFile('.eslintrc', JSON.stringify(eslintrc, null, 2));
+      updateFile('.eslintrc.json', JSON.stringify(eslintrc, null, 2));
 
       updateFile(`apps/${myapp}/src/main.ts`, `console.log("should fail");`);
 
@@ -65,9 +65,25 @@ forEachCli('nx', () => {
 
       runCLI(`generate @nrwl/react:app ${myapp}`);
 
-      const eslintrc = readJson('.eslintrc');
+      // This test is only relevant for the deprecated lint builder,
+      // so we need to patch the workspace.json to use it
+      const workspaceJson = readJson(`workspace.json`);
+      workspaceJson.projects[myapp].architect.lint = {
+        builder: '@nrwl/linter:lint',
+        options: {
+          linter: 'eslint',
+          tsConfig: [
+            `apps/${myapp}/tsconfig.app.json`,
+            `apps/${myapp}/tsconfig.spec.json`,
+          ],
+          exclude: ['**/node_modules/**', `!apps/${myapp}/**/*`],
+        },
+      };
+      updateFile('workspace.json', JSON.stringify(workspaceJson, null, 2));
+
+      const eslintrc = readJson('.eslintrc.json');
       eslintrc.rules['no-console'] = undefined;
-      updateFile('.eslintrc', JSON.stringify(eslintrc, null, 2));
+      updateFile('.eslintrc.json', JSON.stringify(eslintrc, null, 2));
 
       updateFile(`apps/${myapp}/src/main.ts`, `console.log("should fail");`);
 
@@ -113,9 +129,9 @@ forEachCli('nx', () => {
 
       runCLI(`generate @nrwl/react:app ${myapp}`);
 
-      const eslintrc = readJson('.eslintrc');
+      const eslintrc = readJson('.eslintrc.json');
       eslintrc.rules['no-console'] = 'error';
-      updateFile('.eslintrc', JSON.stringify(eslintrc, null, 2));
+      updateFile('.eslintrc.json', JSON.stringify(eslintrc, null, 2));
       updateFile(`apps/${myapp}/src/main.ts`, `console.log("should fail");`);
 
       const outputFile = 'a/b/c/lint-output.json';
@@ -151,9 +167,12 @@ forEachCli('nx', () => {
 
     runCLI(`generate @nrwl/react:app ${myapp}`);
 
-    const eslintrc = readJson(`apps/${myapp}/.eslintrc`);
+    const eslintrc = readJson(`apps/${myapp}/.eslintrc.json`);
     eslintrc.rules['no-console'] = 'warn';
-    updateFile(`apps/${myapp}/.eslintrc`, JSON.stringify(eslintrc, null, 2));
+    updateFile(
+      `apps/${myapp}/.eslintrc.json`,
+      JSON.stringify(eslintrc, null, 2)
+    );
     updateFile(
       `apps/${myapp}/src/main.ts`,
       `console.log('once'); console.log('twice');`

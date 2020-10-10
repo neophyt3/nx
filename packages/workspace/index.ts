@@ -62,7 +62,11 @@ export {
   serializeTarget,
 } from './src/utils/cli-config-utils';
 
-export { getWorkspace, updateWorkspace } from './src/utils/workspace';
+export {
+  getWorkspace,
+  updateWorkspace,
+  updateBuilderConfig,
+} from './src/utils/workspace';
 export { addUpdateTask } from './src/utils/update-task';
 export { addLintFiles, generateProjectLint, Linter } from './src/utils/lint';
 
@@ -71,6 +75,7 @@ export { formatFiles } from './src/utils/rules/format-files';
 export { deleteFile } from './src/utils/rules/deleteFile';
 export * from './src/utils/rules/ng-add';
 export { updateKarmaConf } from './src/utils/rules/update-karma-conf';
+export { visitNotIgnoredFiles } from './src/utils/rules/visit-not-ignored-files';
 export { setDefaultCollection } from './src/utils/rules/workspace';
 import * as strings from './src/utils/strings';
 export { checkAndCleanWithSemver } from './src/utils/version-utils';
